@@ -1,0 +1,6 @@
+{
+  "name": "Infinite React Marquee",
+  "description": "A fully customizable, GPU-accelerated infinite marquee component using React and Tailwind CSS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

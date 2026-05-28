@@ -1,6 +1,6 @@
 {
   "name": "infinite-react-marquee",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "GPU-accelerated, zero-dependency infinite scrolling marquee component for React.",
   "type": "module",
   "license": "MIT",

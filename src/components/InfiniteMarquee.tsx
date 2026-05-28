@@ -42,6 +42,10 @@ export function InfiniteMarquee({
 
   const [containerSize, setContainerSize] = useState(0);
   const [contentSize, setContentSize] = useState(0);
+  const [repeatCount, setRepeatCount] = useState(4);
+
+  const containerSizeRef = useRef(0);
+  const contentSizeRef = useRef(0);
 
   const isVertical = direction === 'up' || direction === 'down';
   
@@ -82,35 +86,56 @@ export function InfiniteMarquee({
   }, []);
 
   // Auto calculate repeats based on sizes container/content
-  const calculatedRepeat = (containerSize > 0 && contentSize > 0)
-    ? Math.ceil(containerSize / contentSize) + 2
-    : 4;
+  const MAX_REPEAT = 50;
 
-  const finalRepeat = repeat || calculatedRepeat;
+  const finalRepeat = repeat ?? repeatCount;
 
   const measureSizes = useCallback(() => {
     const container = containerRef.current;
     const item0 = item0Ref.current;
     if (!container || !item0) return;
 
-    const cSize = isVertical ? container.clientHeight : container.clientWidth;
-    if (cSize > 0) setContainerSize(cSize);
+    // For vertical layouts, prefer the parent's bounded height so content
+    // doesn't drive container size and inflate repeat count in a loop.
+    const parentSize = isVertical
+      ? container.parentElement?.clientHeight ?? 0
+      : container.parentElement?.clientWidth ?? 0;
+    const selfSize = isVertical ? container.clientHeight : container.clientWidth;
+    const cSize = isVertical
+      ? (parentSize > 0 ? parentSize : selfSize)
+      : (selfSize > 0 ? selfSize : parentSize);
 
+    let newContent = contentSizeRef.current;
     const item1 = item1Ref.current;
     if (item1) {
       const dist = isVertical
         ? item1.offsetTop - item0.offsetTop
         : item1.offsetLeft - item0.offsetLeft;
       if (Math.abs(dist) > 0) {
-        setContentSize(Math.abs(dist));
-        return;
+        newContent = Math.abs(dist);
       }
     }
+    if (newContent <= 0) {
+      newContent = isVertical ? item0.offsetHeight : item0.offsetWidth;
+    }
 
-    // Fallback when only one repeat chunk is measurable
-    const fallback = isVertical ? item0.offsetHeight : item0.offsetWidth;
-    if (fallback > 0) setContentSize(fallback);
-  }, [isVertical]);
+    const prevContainer = containerSizeRef.current;
+    const prevContent = contentSizeRef.current;
+
+    containerSizeRef.current = cSize;
+    contentSizeRef.current = newContent;
+    loopWidthRef.current = newContent;
+
+    if (cSize > 0 && cSize !== prevContainer) setContainerSize(cSize);
+    if (newContent > 0 && newContent !== prevContent) setContentSize(newContent);
+
+    if (!repeat) {
+      const nextRepeat = cSize > 0 && newContent > 0
+        ? Math.min(Math.ceil(cSize / newContent) + 2, MAX_REPEAT)
+        : 4;
+      setRepeatCount((prev) => (prev !== nextRepeat ? nextRepeat : prev));
+    }
+  }, [isVertical, repeat]);
 
   // Sync hover via mouse events only — pointerenter sticks on touch after tap
   const handleMouseEnter = () => {
@@ -139,8 +164,18 @@ export function InfiniteMarquee({
   }, [speed, duration, contentSize]);
 
   useEffect(() => {
-    loopWidthRef.current = contentSize;
-  }, [contentSize]);
+    loopWidthRef.current = contentSizeRef.current;
+  }, [contentSize, repeatCount]);
+
+  // Reset scroll position when orientation changes
+  useEffect(() => {
+    posRef.current = 0;
+    containerSizeRef.current = 0;
+    contentSizeRef.current = 0;
+    setContainerSize(0);
+    setContentSize(0);
+    setRepeatCount(4);
+  }, [isVertical, direction]);
 
   // Viewport intersection observer to pause heavy rAF offscreen
   useEffect(() => {
@@ -163,7 +198,7 @@ export function InfiniteMarquee({
       requestAnimationFrame(measureSizes);
     });
     return () => cancelAnimationFrame(frame);
-  }, [measureSizes, finalRepeat]);
+  }, [measureSizes, isVertical, direction]);
 
   // Size measuring via ResizeObserver
   useEffect(() => {
@@ -173,12 +208,14 @@ export function InfiniteMarquee({
       measureSizes();
     });
 
-    observer.observe(containerRef.current);
+    const container = containerRef.current;
+    observer.observe(container);
+    if (container.parentElement) observer.observe(container.parentElement);
     if (item0Ref.current) observer.observe(item0Ref.current);
     if (item1Ref.current) observer.observe(item1Ref.current);
 
     return () => observer.disconnect();
-  }, [isVertical, measureSizes, finalRepeat]);
+  }, [isVertical, direction, measureSizes]);
 
   // Main 120fps Animation Loop
   useEffect(() => {

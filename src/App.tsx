@@ -361,7 +361,7 @@ function Playground({ onClose }: { onClose: () => void }) {
          <section className={`flex-grow flex flex-col bg-white border border-slate-200 rounded-2xl lg:rounded-[2rem] shadow-sm relative overflow-hidden p-4 lg:p-12 min-h-[350px] lg:min-h-[500px]`}>
             <div className="absolute inset-0 pointer-events-none rounded-2xl lg:rounded-[2rem] shadow-[inset_0_0_100px_rgba(0,0,0,0.02)] border border-white" />
             
-            <div className={`relative w-full flex-grow flex flex-col justify-center`}>
+            <div className={`relative w-full flex-grow flex flex-col justify-center ${isVertical ? 'h-[420px]' : ''}`}>
               
               <InfiniteMarquee 
                 direction={direction} 
@@ -373,6 +373,7 @@ function Playground({ onClose }: { onClose: () => void }) {
                 playing={playing}
                 fadeEdges={fadeEdges}
                 fadeWidth="15%"
+                className={isVertical ? 'h-full' : undefined}
               >
                 {TECH_FEATURES.map((feature, i) => (
                   <div key={i} className="flex items-center gap-4 px-4 py-3 lg:px-6 lg:py-4 min-w-[200px] lg:min-w-[240px] w-max mx-auto bg-white border border-slate-200 rounded-xl lg:rounded-2xl shadow-sm cursor-grab active:cursor-grabbing hover:border-slate-300 transition-colors">

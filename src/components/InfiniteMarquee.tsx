@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState, useCallback } from 'react';
 
 export interface InfiniteMarqueeProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -86,6 +86,30 @@ export function InfiniteMarquee({
 
   const finalRepeat = repeat || calculatedRepeat;
 
+  const measureSizes = useCallback(() => {
+    const container = containerRef.current;
+    const item0 = item0Ref.current;
+    if (!container || !item0) return;
+
+    const cSize = isVertical ? container.clientHeight : container.clientWidth;
+    if (cSize > 0) setContainerSize(cSize);
+
+    const item1 = item1Ref.current;
+    if (item1) {
+      const dist = isVertical
+        ? item1.offsetTop - item0.offsetTop
+        : item1.offsetLeft - item0.offsetLeft;
+      if (Math.abs(dist) > 0) {
+        setContentSize(Math.abs(dist));
+        return;
+      }
+    }
+
+    // Fallback when only one repeat chunk is measurable
+    const fallback = isVertical ? item0.offsetHeight : item0.offsetWidth;
+    if (fallback > 0) setContentSize(fallback);
+  }, [isVertical]);
+
   // Sync interaction states to refs for the RAF loop
   useEffect(() => { isHoveredRef.current = isHovered; }, [isHovered]);
   useEffect(() => { isPressedRef.current = isPressed; }, [isPressed]);
@@ -113,42 +137,36 @@ export function InfiniteMarquee({
       ([entry]) => {
         isVisibleRef.current = entry.isIntersecting;
       },
-      { root: null, rootMargin: '0px', threshold: 0 }
+      { root: null, rootMargin: '50px', threshold: 0 }
     );
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
+  // Measure after layout — ResizeObserver alone can fire before refs/layout are ready
+  useLayoutEffect(() => {
+    measureSizes();
+    const frame = requestAnimationFrame(() => {
+      measureSizes();
+      requestAnimationFrame(measureSizes);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [measureSizes, finalRepeat]);
+
   // Size measuring via ResizeObserver
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const observer = new ResizeObserver((entries) => {
-      let cSize = 0;
-      for (const entry of entries) {
-        if (entry.target === containerRef.current) {
-          cSize = isVertical ? entry.contentRect.height : entry.contentRect.width;
-          setContainerSize(cSize);
-        }
-      }
-
-      // Measure accurate loop distance gap by inspecting interval between first two cloned items
-      if (item0Ref.current && item1Ref.current) {
-        const dist = isVertical
-          ? item1Ref.current.offsetTop - item0Ref.current.offsetTop
-          : item1Ref.current.offsetLeft - item0Ref.current.offsetLeft;
-        
-        if (Math.abs(dist) > 0) {
-           setContentSize(Math.abs(dist));
-        }
-      }
+    const observer = new ResizeObserver(() => {
+      measureSizes();
     });
 
     observer.observe(containerRef.current);
     if (item0Ref.current) observer.observe(item0Ref.current);
+    if (item1Ref.current) observer.observe(item1Ref.current);
 
     return () => observer.disconnect();
-  }, [isVertical]);
+  }, [isVertical, measureSizes, finalRepeat]);
 
   // Main 120fps Animation Loop
   useEffect(() => {
@@ -246,7 +264,7 @@ export function InfiniteMarquee({
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => { setIsHovered(false); if(pauseOnPress) setIsPressed(false); }}
       onPointerDown={handlePointerDown}
-      className={`relative overflow-hidden w-full h-full select-none ${pauseOnPress ? 'cursor-grab active:cursor-grabbing' : ''} ${className}`}
+      className={`relative overflow-hidden w-full min-h-0 select-none ${pauseOnPress ? 'cursor-grab active:cursor-grabbing' : ''} ${className}`}
       {...props}
       dir="ltr"
       style={{
@@ -258,7 +276,7 @@ export function InfiniteMarquee({
       <div
         ref={scrollerRef}
         dir="ltr" // Force LTR track rendering to keep mathematical translation predictable
-        className={`flex ${isVertical ? 'flex-col h-max w-full' : 'flex-row w-max min-h-full'}`}
+        className={`flex ${isVertical ? 'flex-col h-max w-full' : 'flex-row w-max'}`}
         style={{ gap, willChange: 'transform' }}
       >
         {Array.from({ length: finalRepeat }).map((_, i) => (

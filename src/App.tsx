@@ -134,7 +134,7 @@ function Landing({ onOpenPlayground }: { onOpenPlayground: () => void }) {
 
         {/* --- SCROLL LEFT (Normal, Fast) --- */}
         <div className="relative w-full">
-          <InfiniteMarquee speed={50} direction="left" gap="1.5rem" fadeEdges fadeWidth="15%" pauseOnHover={false}>
+          <InfiniteMarquee speed={50} direction="left" gap="1.5rem" fadeEdges fadeWidth="15%" pauseOnHover={false} respectReducedMotion={false}>
             {TECH_FEATURES.map((feature, i) => (
               <div key={`f-${i}`} className={`flex items-center gap-4 px-6 py-4 min-w-[240px] rounded-2xl bg-[#111116] border border-[#22222a] hover:border-${feature.color}-500/30 transition-all duration-300 cursor-grab active:cursor-grabbing shadow-xl shadow-black/50`}>
                 <div className={`p-2 rounded-lg bg-${feature.color}-500/10 text-${feature.color}-400`}>
@@ -148,7 +148,7 @@ function Landing({ onOpenPlayground }: { onOpenPlayground: () => void }) {
 
         {/* --- SCROLL RIGHT (Brand Logos, Slower) --- */}
         <div className="relative w-full">
-          <InfiniteMarquee speed={30} direction="right" gap="4rem" fadeEdges fadeWidth="15%" pauseOnHover={false}>
+          <InfiniteMarquee speed={30} direction="right" gap="4rem" fadeEdges fadeWidth="15%" pauseOnHover={false} respectReducedMotion={false}>
             {BRAND_LOGOS.map((logo, i) => (
                <div key={`l-${i}`} className="flex items-center justify-center px-8 text-2xl font-bold font-sans text-gray-700 tracking-tighter uppercase whitespace-nowrap cursor-grab active:cursor-grabbing">
                  {logo}
@@ -160,7 +160,7 @@ function Landing({ onOpenPlayground }: { onOpenPlayground: () => void }) {
         {/* --- TESTIMONIALS --- */}
         <div className="relative w-full">
           <p className="text-center text-xs uppercase tracking-widest text-gray-600 mb-6 font-semibold">Social proof ticker</p>
-          <InfiniteMarquee speed={25} direction="left" gap="2rem" fadeEdges fadeWidth="12%" pauseOnHover={false}>
+          <InfiniteMarquee speed={25} direction="left" gap="2rem" fadeEdges fadeWidth="12%" pauseOnHover={false} respectReducedMotion={false}>
             {TESTIMONIALS.map((t, i) => (
               <div key={`t-${i}`} className="flex items-start gap-3 px-6 py-4 min-w-[320px] max-w-[360px] rounded-2xl bg-[#111116] border border-[#22222a] cursor-grab active:cursor-grabbing">
                 <Quote className="w-5 h-5 text-emerald-500/60 shrink-0 mt-0.5" />
@@ -177,7 +177,7 @@ function Landing({ onOpenPlayground }: { onOpenPlayground: () => void }) {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8 items-center">
           <div className="relative w-full h-[280px] rounded-3xl border border-[#22222a] bg-[#0c0c0f] overflow-hidden">
             <p className="absolute top-4 left-4 z-10 text-xs uppercase tracking-widest text-gray-600 font-semibold">Vertical scrolling</p>
-            <InfiniteMarquee speed={35} direction="up" gap="1rem" fadeEdges fadeWidth="3rem" className="h-full" pauseOnHover={false}>
+            <InfiniteMarquee speed={35} direction="up" gap="1rem" fadeEdges fadeWidth="3rem" className="h-full" pauseOnHover={false} respectReducedMotion={false}>
               {USE_CASES.map((item, i) => (
                 <div key={`u-${i}`} className="flex items-center gap-3 px-5 py-4 rounded-xl bg-[#111116] border border-[#22222a] cursor-grab active:cursor-grabbing">
                   <span className="text-2xl">{item.emoji}</span>

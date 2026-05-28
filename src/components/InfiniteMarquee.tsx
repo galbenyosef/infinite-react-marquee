@@ -12,6 +12,7 @@ export interface InfiniteMarqueeProps extends React.HTMLAttributes<HTMLDivElemen
   pauseOnHover?: boolean;
   pauseOnPress?: boolean;
   repeat?: number; // Optional override
+  respectReducedMotion?: boolean;
   innerClassName?: string;
   rtl?: boolean;
 }
@@ -28,6 +29,7 @@ export function InfiniteMarquee({
   pauseOnHover = true,
   pauseOnPress = true,
   repeat,
+  respectReducedMotion = true,
   className = '',
   innerClassName = '',
   rtl = false,
@@ -191,7 +193,8 @@ export function InfiniteMarquee({
       if (width > 0 && isVisibleRef.current) {
         // Compute Translation
         if (!isDraggingRef.current) {
-          const isPaused = !playing || reducedMotion || (pauseOnHover && isHoveredRef.current) || (pauseOnPress && isPressedRef.current);
+          const motionReduced = respectReducedMotion && reducedMotion;
+          const isPaused = !playing || motionReduced || (pauseOnHover && isHoveredRef.current) || (pauseOnPress && isPressedRef.current);
           if (!isPaused) {
             const delta = (dt / 1000) * autoScrollSpeedRef.current;
             const dirMultiplier = isReverse ? 1 : -1;
@@ -221,7 +224,7 @@ export function InfiniteMarquee({
 
     animationFrameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isVertical, isReverse, pauseOnHover, pauseOnPress, playing, reducedMotion]);
+  }, [isVertical, isReverse, pauseOnHover, pauseOnPress, playing, reducedMotion, respectReducedMotion]);
 
   // Seamless Swipe/Drag Support
   const handlePointerDown = (e: React.PointerEvent) => {

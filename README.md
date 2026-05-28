@@ -125,13 +125,26 @@ export default App;
 
 ---
 
-## 🥊 Comparison: Why not `react-fast-marquee` or `framer-motion`?
+## 🥊 Feature Comparison
 
-If you've built production apps, you know the pain of marques implementations. 
-- **Gestures/Dragging**: CSS-based marques (like `react-fast-marquee`) cannot support dragging/swiping natively without resetting the layout unpredictably. We manage translation via pure DOM matrix transformations.
-- **RTL Safety**: Global `dir="rtl"` instantly breaks standard marquees because they assume left-alignment. We clamp the internal Flexbox engine to LTR and recalculate widths securely for right-to-left UI environments.
-- **Hidden Battery Drain**: Standard CSS animations run constantly even when off-viewport. We utilize an `IntersectionObserver` to decouple the compute loop when no one is looking.
-- **Weight**: Framer Motion is amazing, but pulling a physics engine in to animate a scrolling banner adds >30kb to your bundle constraint. We do it in `<2kb`.
+How **Infinite React Marquee** stacks up against common approaches — without naming names.
+
+| Feature | Infinite React Marquee | CSS-based alternatives | Animation physics libraries |
+| ------- | ---------------------- | ---------------------- | --------------------------- |
+| Interactive swipe / drag | ✅ Native & seamless | ❌ Not supported | ✅ Supported (heavy) |
+| Global RTL support | ✅ Bulletproof math | ❌ Broken alignment | ⚠️ Requires config |
+| Off-screen pausing | ✅ Auto (IntersectionObserver) | ❌ Runs off-screen | ⚠️ Manual config |
+| Reduced motion (a11y) | ✅ Auto-detected | ⚠️ Requires CSS / prop | ⚠️ Partial native |
+| Edge fading | ✅ Native CSS mask | ⚠️ Overlay gradients | ❌ Extra CSS required |
+| Animation engine | `rAF` + direct DOM | CSS keyframes | Complex physics `rAF` |
+| Bundle size | **< 2kb** | ~3–4kb | > 30kb |
+
+**Why it matters in production:**
+
+- **Gestures / dragging** — CSS-only marquees can't support drag without unpredictable layout resets. We translate via pure DOM matrix transforms.
+- **RTL safety** — Global `dir="rtl"` breaks marquees that assume left-alignment. We clamp internal layout to LTR and recalculate widths securely.
+- **Battery drain** — CSS animations keep running off-screen. We halt the compute loop when nothing is watching.
+- **Bundle weight** — Physics animation libraries are powerful, but overkill for a scrolling banner. This ships in under 2kb.
 
 ## 🤝 Contributing
 

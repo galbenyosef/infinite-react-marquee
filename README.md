@@ -6,12 +6,12 @@
     <a href="https://www.npmjs.com/package/infinite-react-marquee"><img src="https://img.shields.io/npm/dt/infinite-react-marquee.svg" alt="npm downloads"></a>
     <img src="https://img.shields.io/bundlephobia/minzip/infinite-react-marquee" alt="bundle size">
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-    <a href="https://github.com/galbenyosef/infinite-react-marquee"><img src="https://img.shields.io/github/stars/galbenyosef/infinite-react-marquee?style=social" alt="GitHub stars"></a>
+    <a href="https://github.com/galbenyosef/infinite-react-marquee"><img src="https://img.shields.io/github/stars/galbenyosef/infinite-react-marquee?style=flat&logo=github" alt="GitHub stars"></a>
   </p>
   <p>
     <a href="https://galbenyosef.github.io/infinite-react-marquee/"><b>✨ Live Demo & Playground</b></a>
     ·
-    <a href="https://github.com/galbenyosef/infinite-react-marquee">GitHub</a>
+    <a href="https://github.com/galbenyosef/infinite-react-marquee"><b>GitHub Repository</b></a>
     ·
     <a href="https://www.npmjs.com/package/infinite-react-marquee">npm</a>
   </p>
@@ -26,6 +26,8 @@ It utilizes a precision `requestAnimationFrame` engine combined with CSS 3D tran
 ## 🎬 Live Demo
 
 **Try it now:** [galbenyosef.github.io/infinite-react-marquee](https://galbenyosef.github.io/infinite-react-marquee/)
+
+**Source code:** [github.com/galbenyosef/infinite-react-marquee](https://github.com/galbenyosef/infinite-react-marquee)
 
 The demo site includes:
 
@@ -148,7 +150,7 @@ How **Infinite React Marquee** stacks up against common approaches — without n
 
 ## 🤝 Contributing
 
-Contributions are welcome! See the [GitHub repository](https://github.com/galbenyosef/infinite-react-marquee).
+Contributions are welcome! Open issues and PRs on the [GitHub repository](https://github.com/galbenyosef/infinite-react-marquee).
 
 ```bash
 git clone https://github.com/galbenyosef/infinite-react-marquee.git

@@ -110,6 +110,16 @@ export function InfiniteMarquee({
     if (fallback > 0) setContentSize(fallback);
   }, [isVertical]);
 
+  // Sync hover via mouse events only — pointerenter sticks on touch after tap
+  const handleMouseEnter = () => {
+    if (pauseOnHover) setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (pauseOnPress) setIsPressed(false);
+  };
+
   // Sync interaction states to refs for the RAF loop
   useEffect(() => { isHoveredRef.current = isHovered; }, [isHovered]);
   useEffect(() => { isPressedRef.current = isPressed; }, [isPressed]);
@@ -261,8 +271,8 @@ export function InfiniteMarquee({
   return (
     <div
       ref={containerRef}
-      onPointerEnter={() => setIsHovered(true)}
-      onPointerLeave={() => { setIsHovered(false); if(pauseOnPress) setIsPressed(false); }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onPointerDown={handlePointerDown}
       className={`relative overflow-hidden w-full min-h-0 select-none ${pauseOnPress ? 'cursor-grab active:cursor-grabbing' : ''} ${className}`}
       {...props}

@@ -62,7 +62,6 @@ npm run dev
 npm install infinite-react-marquee
 # or
 
-![or](docs/cover.png)
 yarn add infinite-react-marquee
 # or
 pnpm add infinite-react-marquee
